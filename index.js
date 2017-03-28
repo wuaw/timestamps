@@ -1,5 +1,6 @@
 const S = require('./string');
 module.exports = function TimeStamps(dispatch){
+    let blockedUsers = []
     dispatch.hook('S_USER_BLOCK_LIST', 1, (event) => {
         event.blockList.forEach(addBlockedUser);
     })
