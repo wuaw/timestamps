@@ -1,30 +1,30 @@
 const S = require('./string')
 module.exports = function TimeStamps(dispatch){
-    let blockedUsers = []
+    const blocked = new Set()
+
     dispatch.hook('S_USER_BLOCK_LIST', 1, (event) => {
-        event.blockList.forEach(addBlockedUser)
+        for(const member of event.blockList){
+            block(member)
+        }
     })
-    dispatch.hook('S_ADD_BLOCKED_USER', 1, addBlockedUser)
+    dispatch.hook('S_ADD_BLOCKED_USER', 1, block)
     dispatch.hook('C_REMOVE_BLOCKED_USER', 1, (event) => {
-        let index = blockedUsers.indexOf(event.name)
-        if(index !== -1)
-            blockedUsers.splice(index, 1)
+        blocked.delete(event.name)
     })
     dispatch.hook('S_LOGIN', 1, (event) => {
-        blockedUsers = []
+        blocked.clear()
     })
-    function addBlockedUser(user){
-        if(!blockedUsers.includes(user.name))
-            blockedUsers.push(user.name)
+    function block(user){
+        blocked.add(user.name)
     }
-    function processEvent(event){
+    function processChatEvent(event){
         if(event.channel === 26) return
-        if(blockedUsers.includes(event.authorName)) return false
+        if(blocked.has(event.authorName)) return false
         var time = new Date()
         var timeStr = ("0" + time.getHours()).slice(-2) + ":" + ("0" + time.getMinutes()).slice(-2)
         event.authorName = `</a>${timeStr}][<a href='asfunction:chatNameAction,${event.authorName}@0@0'>${event.authorName}</a>`
         return true
     }
-    dispatch.hook('S_CHAT', 1, processEvent)
-    dispatch.hook('S_PRIVATE_CHAT', 1, processEvent)
+    dispatch.hook('S_CHAT', 1, processChatEvent)
+    dispatch.hook('S_PRIVATE_CHAT', 1, processChatEvent)
 }
