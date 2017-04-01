@@ -1,3 +1,3 @@
-# TimeStamps
+# timestamps
 
-Preview: ![preview](/preview.png?raw=true)
+![preview](/preview.png?raw=true)
