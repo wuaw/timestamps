@@ -2,12 +2,10 @@ const S = require('./string')
 module.exports = function TimeStamps(dispatch){
     const blocked = new Set()
 
-    dispatch.hook('S_USER_BLOCK_LIST', 1, (event) => {
-        for(const member of event.blockList){
-            block(member)
-        }
-    })
     dispatch.hook('S_ADD_BLOCKED_USER', 1, block)
+    dispatch.hook('S_USER_BLOCK_LIST', 1, (event) => {
+        event.blockList.forEach(block)
+    })
     dispatch.hook('C_REMOVE_BLOCKED_USER', 1, (event) => {
         blocked.delete(event.name)
     })
